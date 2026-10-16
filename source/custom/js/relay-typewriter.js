@@ -29,20 +29,11 @@ function startRelayTypewriter() {
     const raw = desc.innerText.trim()
     if (!raw) return
 
-    // 每行再按固定长度二次均分，形成多行「接力换行」的视觉效果
+    // 按 \n 或行分割 token 拆行；单段则只有一行（单个打字机，打完即停）
     const relay = raw
       .split(LINE_SPLIT_TOKEN)
       .map((s) => s.trim())
       .filter(Boolean)
-      .reduce((lines, line) => {
-        if (line.length <= 20) {
-          lines.push(line)
-        } else {
-          const chunk = Math.max(12, Math.ceil(line.length / Math.ceil(line.length / 20)))
-          for (let i = 0; i < line.length; i += chunk) lines.push(line.slice(i, i + chunk))
-        }
-        return lines
-      }, [])
 
     // 标记已处理，防止重复初始化
     desc.dataset.lines = relay.join('\n')
@@ -67,15 +58,18 @@ function startRelayTypewriter() {
           desc.textContent += text.charAt(i++)
           setTimeout(step, TYPE_SPEED)
         } else {
-          // 本行打完：稍作停留后清屏，进入下一行接力
+          // 打完本行：仅一行时打完即停（光标隐藏，同官方 demo）；
+          // 多行时停留片刻再清屏，进入下一行接力
           setTimeout(() => {
             if (cursor) cursor.style.display = 'none'
-            setTimeout(() => {
-              lineIndex = (lineIndex + 1) % lines.length
-              if (cursor) cursor.style.display = 'inline'
-              typeLine()
-            }, 350)
-          }, 2000)
+            if (lines.length > 1) {
+              setTimeout(() => {
+                lineIndex = (lineIndex + 1) % lines.length
+                if (cursor) cursor.style.display = 'inline'
+                typeLine()
+              }, 350)
+            }
+          }, lines.length > 1 ? 2000 : 220)
         }
       }
 
@@ -83,15 +77,6 @@ function startRelayTypewriter() {
     }
 
     typeLine()
-    // 防止循环打字链被打断：如果 5 秒内无变化则重启
-    const guard = setInterval(() => {
-      if (desc.textContent === '' && !desc.dataset.pending) {
-        desc.dataset.pending = '1'
-        typeLine()
-        setTimeout(() => delete desc.dataset.pending, 1000)
-      }
-    }, 5000)
-    item.dataset.guard = String(guard)
   }
 }
 
