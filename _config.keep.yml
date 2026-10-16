@@ -1,0 +1,17 @@
+# Theme Keep configuration
+# Docs: https://keep-docs.xpoet.cn
+
+# Separate from the theme's _config.yml, so theme upgrades won't lose your settings
+base_info:
+  title: Leon's Blog
+  author: Leon
+  avatar: /images/avatar.svg
+  logo: /images/logo.svg
+  favicon: /images/logo.svg
+
+menu:
+  home: /
+  archives: /archives
+  tags: /tags
+  # categories: /categories
+  # about: /about
