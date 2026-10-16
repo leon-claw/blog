@@ -15,3 +15,44 @@ menu:
   tags: /tags
   # categories: /categories
   # about: /about
+
+# 首屏：全屏背景 + 金句打字机（与 xpoet.cn 首页同款效果）
+# - 背景动效来自官方 SVG 素材（light: climbed.svg / dark: put.svg），逐云飘动生长动画
+# - 金句在 JS 里自动切分为多行、循环接力，静止光标闪烁
+# - 背景为个人使用目的取自官方主题 demo（keep.xpoet.cn），建议后续换成自己的图片
+first_screen:
+  enable: true
+  background_img: /images/bg/light.svg
+  background_img_dark: /images/bg/dark.svg
+  description: >-
+    黄色的森林里分出两条路，可惜我不能同时去涉足；
+    || 而我选择了人迹更少的那一条，从此决定了我一生的道路。
+  hitokoto: false
+
+social_contact:
+  enable: true
+  links:
+    github: https://github.com/yourname
+    email: you@example.com
+
+scroll:
+  progress_bar: true
+  percent: true
+  hide_header: true
+
+home:
+  announcement:
+  category: true
+  tag: true
+  post_datetime: updated
+
+post:
+  word_count:
+    wordcount: true
+    min2read: true
+
+# 注入自定义脚本（首屏接力打字机）
+inject:
+  enable: true
+  js:
+    - /custom/js/relay-typewriter.js
