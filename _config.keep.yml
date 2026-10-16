@@ -16,10 +16,11 @@ menu:
   # categories: /categories
   # about: /about
 
-# 首屏：全屏背景 + 金句打字机（与 xpoet.cn 首页同款效果）
+# 首屏：全屏背景 + 金句打字机
 # - 背景动效来自官方 SVG 素材（light: climbed.svg / dark: put.svg），逐云飘动生长动画
-# - 单行金句，单个打字机，打完光标闪烁（多段接力请用 \n 分隔）
-# - 背景为个人使用目的取自官方主题 demo（keep.xpoet.cn），建议后续换成自己的图片
+# - 金句优先从「一言」API 每次随机（custom_hitokoto，由 relay-typewriter.js 接管）
+#   请求失败/超时 4s 后回退到下面的 description 本地文案
+#   （不开启主题自带的 hitokoto: true，那个有 400ms 竞态且与自定义脚本冲突）
 first_screen:
   enable: true
   background_img: /images/bg/light.svg
@@ -28,6 +29,7 @@ first_screen:
     黄色的森林里分出两条路，可惜我不能同时去涉足，
     而我选择了人迹更少的那一条，从此决定了我一生的道路。
   hitokoto: false
+  custom_hitokoto: true
 
 social_contact:
   enable: true
