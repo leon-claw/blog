@@ -1,8 +1,11 @@
 .DS_Store
 Thumbs.db
-db.json
+.db.json
 *.log
 node_modules/
 public/
 .deploy*/
 _multiconfig.yml
+
+# 外部文章仓库（bin/sync-articles.mjs 管理生命周期）
+article-src/
