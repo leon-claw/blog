@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Leon's Blog (Next.js) launchd 服务示例
+  安装：
+    1) npm run build  （output: standalone 时需把 .next/static 与 ./public 复制进 .next/standalone/）
+       cp -R public .next/standalone/public && cp -R .next/static .next/standalone/.next/static
+    2) cp docs/deploy/launchd/th-blog-next.plist ~/Library/LaunchAgents/
+    3) launchctl load ~/Library/LaunchAgents/th-blog-next.plist
+PORT 与 nginx upstream（127.0.0.1:3100）保持一致。
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>org.nohow.blog</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/bin/node</string>
+    <string>/Users/leon.w/workspace/mine/blog/.next/standalone/server.js</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PORT</key><string>3100</string>
+    <key>NODE_ENV</key><string>production</string>
+  </dict>
+  <key>WorkingDirectory</key><string>/Users/leon.w/workspace/mine/blog/.next/standalone</string>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>StandardOutPath</key><string>/tmp/th-blog-next.log</string>
+  <key>StandardErrorPath</key><string>/tmp/th-blog-next.err</string>
+</dict>
+</plist>

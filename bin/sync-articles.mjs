@@ -1,22 +1,22 @@
 #!/usr/bin/env node
 /**
- * 同步 Leonw26/article 仓库的文章到 Hexo source/_posts
+ * 同步 Leonw26/article 仓库的文章到 Next.js content/posts
  *
  * 用法：node bin/sync-articles.mjs
  *  1. article-src/ 不存在时自动 clone，否则 git pull 更新
- *  2. 根目录 *.md（跳过 private/）补充/规范 front matter 后写入 source/_posts/
+ *  2. 根目录 *.md（跳过 private/）补充/规范 front matter 后写入 content/posts/
  *     - 已有 front matter（所有文章自带 title/date/tags）仅透传，不做改动
- *  3. 附带 images/ -> source/images/articles/，并转换 Obsidian 图片语法
+ *  3. 附带 article-src/images/ -> public/images/articles/，并转换 Obsidian 图片语法
  *     `![[./images/xx.png]]` -> `<img src="/images/articles/xx.png">`
- *     （marked 不支持 wiki 嵌入语法，直播出 HTML 兜底）
+ *     （marked 不支持 wiki 嵌入语法，直播出 HTML 兜底；图片随文章同步到 public/images/articles/）
  */
 import { execSync } from 'node:child_process'
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync, cpSync } from 'node:fs'
 import { join, basename } from 'node:path'
 const REPO = 'https://github.com/Leonw26/article.git'
 const SRC_DIR = 'article-src'
-const POSTS_DIR = 'source/_posts'
-const IMG_OUT = 'source/images/articles'
+const POSTS_DIR = 'content/posts'
+const IMG_OUT = 'public/images/articles'
 const SKIP_DIRS = new Set(['private']) // 草稿/私密目录不同步
 
 // 取文章在 git 历史中的最早提交时间（兜底 front matter 没写 date 时用）
@@ -33,7 +33,12 @@ function firstCommitDate(repo, file) {
 if (!existsSync(SRC_DIR)) {
   execSync(`git clone ${REPO} ${SRC_DIR}`, { stdio: 'inherit' })
 } else {
-  execSync(`git -C ${SRC_DIR} pull --ff-only`, { stdio: 'inherit' })
+  try {
+    execSync(`git -C ${SRC_DIR} pull --ff-only`, { stdio: 'inherit' })
+  } catch (e) {
+    // pull 失败（离线/分叉）不影响本地迁移：沿用现有 article-src 继续同步
+    console.warn('⚠ git pull 失败，使用本地 article-src 现状继续：' + e.message)
+  }
 }
 
 // ---- 2. 同步图片目录 ----

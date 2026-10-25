@@ -1,0 +1,11 @@
+{
+  "servers": {
+    "leon-blog": {
+      "type": "stdio",
+      "command": "/usr/local/bin/node",
+      "args": [
+        "/Users/leon.w/workspace/mine/blog/mcp/server.mjs"
+      ]
+    }
+  }
+}

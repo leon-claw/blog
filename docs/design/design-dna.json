@@ -1,0 +1,222 @@
+{
+  "meta": {
+    "name": "Leon's Blog — keep 主题设计 DNA（现状基线）",
+    "description": "从当前 Hexo + hexo-theme-keep 博客中提取的设计基线。用途：作为 Next.js 重构的『现状快照』——重设计保留其气质（安静书卷气、首屏插画+打字机签名动作、0.2s 统一动效），但允许在此基础上演进而非像素级复刻。所有颜色/字号/时长均来自主题源码与编译产物（非截图目测）。",
+    "source_references": [
+      "_config.keep.yml",
+      "node_modules/hexo-theme-keep/source/css/common/css-variables.styl",
+      "node_modules/hexo-theme-keep/source/css/common/stylus-variables.styl",
+      "public/css/style.css（114KB 编译产物，含 .dark-mode 变量块）",
+      "source/images/bg/light.svg / dark.svg（SMIL 动画插画）",
+      "source/custom/js/relay-typewriter.js（首屏打字机）",
+      "node_modules/hexo-theme-keep/source/css/layout/_partial/first-screen.styl"
+    ],
+    "created_at": "2026-10-25"
+  },
+  "design_system": {
+    "color": {
+      "palette_type": "analogous（蓝主色 + 中性面，首屏插画点缀 Google 彩色几何形）",
+      "primary": {
+        "hex": "#0066cc",
+        "role": "链接、激活态、选中文字、进度条；衍生 tint：light-1 #0075eb，light-2 #0a85ff，dark-1 #005cb8，dark-2 #0052a3"
+      },
+      "secondary": {
+        "hex": "#0458ab",
+        "role": "信息高亮/提示块（dark 模式切换为 #268bef）；常以 10% alpha 作底、60% 作边框"
+      },
+      "accent": {
+        "hex": "#1a73e8",
+        "role": "仅用于首屏 SVG 插画的几何形配色，同组：#81C995（绿）、#FDD663（黄）、#EE675C（珊瑚）、#F1F3F4（浅灰）——Material-era Google 色"
+      },
+      "neutral": {
+        "scale": {
+          "light": ["#ffffff", "#f7f7f7", "#f0f0f0", "#ededef", "#b7b7c0", "#b3b3b3", "#9393a1", "#808091", "#686877", "#50505c", "#4c4c57", "#484853"],
+          "dark": ["#22272e", "#292f38", "#2e3841", "#313842", "#4d5e6c", "#596678", "#6c8397", "#8296a6", "#adbac5", "#b2bec8", "#b7c2cc", "#ced6dc"]
+        },
+        "usage": "正文字 #50505c（dark #adbac5）在纯白面上，≈8.5:1；辅助文本 4 档递减（#808091 → #ededef）；边框两级：#b3b3b3 实线与 rgba(80,80,92,.15) 软分隔线；dark 基调为 GitHub-Dim 感的蓝灰 (#22272e)"
+      },
+      "semantic": {
+        "success": "#10b981（10% 底 / 60% 边）",
+        "warning": "#b78d0f（dark #ecc34d）",
+        "error": "#f43f5e",
+        "info": "#0458ab（dark #268bef）"
+      },
+      "surface": {
+        "background": "#ffffff（dark #22272e；点赞内容底 dark #21262d）",
+        "card": "#ffffff + 发光阴影（dark #292f38）",
+        "elevated": "#f7f7f7 / #f0f0f0（dark #292f38 / #313842）；引用块用 background-2"
+      },
+      "contrast_strategy": "dark-on-light dominant；dark 模式整套独立蓝灰阶而非纯反色"
+    },
+    "typography": {
+      "type_scale": {
+        "display": { "size": "2rem", "weight": 400, "line_height": 1.6, "tracking": "normal", "note": "首屏打字机金句，only hero" },
+        "heading_1": { "size": "1.68rem", "weight": 600, "line_height": 1.6, "tracking": "normal", "note": "正文 h1；800px 以下 1.512rem，500px 以下 1.344rem" },
+        "heading_2": { "size": "1.6rem", "weight": 600, "line_height": 1.6, "tracking": "normal", "note": "正文 h2；响应式 1.44 / 1.28rem" },
+        "heading_3": { "size": "1.5rem", "weight": 550, "line_height": 1.6, "tracking": "normal", "note": "响应式 1.35 / 1.2rem" },
+        "heading_4": { "size": "1.4rem", "weight": 550, "line_height": 1.6, "tracking": "normal", "note": "响应式 1.26 / 1.12rem" },
+        "body": { "size": "15.2px", "weight": 400, "line_height": "1.45（UI 基线 22px）/ 1.6（正文）", "tracking": "normal" },
+        "body_small": { "size": "0.9rem", "weight": 400, "line_height": 1.5, "tracking": "normal" },
+        "caption": { "size": "0.8rem", "weight": 400, "line_height": 1.5, "tracking": "normal", "note": "文章元信息/日期" },
+        "overline": { "size": "0.75rem", "weight": 600, "line_height": 1.5, "tracking": "0.08em", "note": "现状无 overline 用例，此为重设计预留的最接近值" }
+      },
+      "font_families": {
+        "heading": "Optima-Regular, Optima, PingFang SC, Microsoft YaHei, sans-serif",
+        "body": "Optima-Regular, Optima, PingFang SC, Microsoft YaHei, sans-serif",
+        "mono": "\"Source Code Pro\", consolas, Menlo, monospace"
+      },
+      "font_style_notes": "人文无衬线 Optima 打头配 PingFang SC，带 90 年代 print 感的柔和字形；标题 600/550 两级；代码块配色：light = Tomorrow(#fafafa 底 #535360 字)，dark = GitHub-Dim 感(#1f242a 底 #afbbc6 字)，带行号 gutter"
+    },
+    "spacing": {
+      "base_unit": "8px",
+      "scale": ["8px", "16px", "24px", "36px（--component-gap）"],
+      "content_density": "comfortable",
+      "section_rhythm": "统一 36px 组件间距；卡片列表纵向排布、间距一致，不做节奏变化"
+    },
+    "layout": {
+      "grid_system": "单列居中，无栅格；桌面端文章页带右侧 TOC 悬浮栏",
+      "max_content_width": "960px（次级内容 1.2×=1152px）",
+      "columns": "1（+ 可选 TOC 侧栏）",
+      "gutter": "内容宽度 80%（平板 88%、手机 90%）",
+      "breakpoints": ["800px", "500px"],
+      "alignment_tendency": "centered"
+    },
+    "shape": {
+      "border_radius": { "small": "4px（行内代码/引用块圆角）", "medium": "8px（--box-border-radius，卡片/封面）", "large": "8px", "pill": "999px（标签 badge）" },
+      "border_usage": "subtle 1px（输入/卡片边）+ 语义色 60% alpha 的提示块描边",
+      "divider_style": "1px solid #b3b3b3；正文标题下划 rgba(80,80,92,.15) 软线"
+    },
+    "elevation": {
+      "shadow_style": "soft diffused（无偏移发光阴影为主）",
+      "levels": {
+        "low": "0 0 8px rgba(0,0,0,.16)（dark rgba(120,120,120,.18)）",
+        "medium": "0 0 12px rgba(0,0,0,.22)（hover；dark .24）",
+        "high": "2px 2px 8px / 0.2rem 0.2rem 0.4rem rgba(0,0,0,.16)（带偏移，用于弹层/图片角）"
+      },
+      "depth_cues": "shadows"
+    },
+    "iconography": {
+      "style": "实心 glyph，无描边体系",
+      "stroke_weight": "n/a（FA 实心集）",
+      "size_scale": "1.8rem（首屏图标）/ ~1rem（UI 操作图标）",
+      "preferred_set": "Font Awesome 6 Free（solid/regular/brands）+ 自定义 SVG logo/头像"
+    },
+    "motion": {
+      "easing": "ease（唯一曲线，所有 transition 通用）",
+      "duration_scale": { "micro": "0.2s（属性：color/background/box-shadow/border-color/visibility/transform）", "normal": "0.2s", "macro": "打字机 120ms/字符；SVG 循环 5–35s" },
+      "entrance_pattern": "fade-in-down keyframe；图片加载 img-loading 渐显",
+      "exit_pattern": "none",
+      "philosophy": "minimal functional——UI 层全部统一 0.2s ease；表现力全部集中在首屏（打字机 + 循环 SVG 插画），内容区保持安静"
+    },
+    "components": {
+      "button_style": "文字/图标 ghost 为主，无实心大按钮；操作图标 hover 变主色",
+      "input_style": "极简 1px 边框（现无搜索输入用例）",
+      "card_style": "纯白圆角 8px 卡片 + 0 0 8px 发光阴影，hover 加深至 0 0 12px（hover-scale=1 不放大）",
+      "navigation_pattern": "70px 固定 header，首屏上透明(α .28)→滚动后毛玻璃 blur 4px + 白底，滚动时收缩到 50.4px（×0.72）；顶部 2px 主色滚动进度条",
+      "modal_style": "none（移动端设置抽屉）",
+      "list_style": "纵向文章卡片流：标题 + 发布/更新时间 + 分类/标签 pill",
+      "component_notes": "TOC 桌面右侧悬浮、细滚动条 rgba 10% 透明底；blockquote = background-2 面 + 0.4rem 左粗边 + text-color-4；代码块带行号 gutter（#f2f2f2/#585865）；标签为 pill badge；滚动条整站主题化"
+    }
+  },
+  "design_style": {
+    "aesthetic": {
+      "mood": ["安静", "书卷气", "工程师式的整洁", "带一丝童趣"],
+      "visual_metaphor": "户外登山/夜空的扁平几何插画开场（云、山、几何形缓慢旋转漂浮），内容回归纯粹排版",
+      "era_influence": "Material-era Google 配色 + 独立博客 editorial minimalism；jQuery 时代组件思维的骨架正等待现代化",
+      "genre": "indie personal dev blog",
+      "personality_traits": ["低调", "认真", "内敛", "偶尔松弛"],
+      "adjectives": ["calm", "clean", "typography-first", "gentle", "slightly playful"]
+    },
+    "visual_language": {
+      "complexity": "moderate",
+      "ornamentation": "subtle accents（仅首屏彩色几何 + 语义色 callout）",
+      "whitespace_usage": "舒适居中，正文 column 外大量留白",
+      "visual_weight_distribution": "single-column centered",
+      "focal_strategy": "single hero element（首屏插画+金句占满 100vh，之后全是文字流）",
+      "contrast_level": "中高对比（正文 8.5:1，辅助字刻意多档衰减）",
+      "texture_usage": "none"
+    },
+    "composition": {
+      "hierarchy_method": "typographic hierarchy + 色重（#50505c → #808091 → #ededef 三档灰阶）",
+      "balance_type": "symmetric",
+      "flow_direction": "top-down",
+      "grouping_strategy": "卡片分组 + 36px 等距节奏",
+      "negative_space_role": "首屏 100vh 几乎全为负空间和插画，是设计的『呼吸口』"
+    },
+    "imagery": {
+      "photo_treatment": "圆角 8px 封面/插图，加载时渐显（img-loading mask）",
+      "illustration_style": "扁平几何（rect rx=40 / 云朵 path / 三角 / 圆），单一 Google 色，无渐变无描边",
+      "graphic_elements": "旋转方块、平移云朵、滚落三角形、漂浮圆点",
+      "pattern_usage": "仅首屏，内容区无装饰纹理",
+      "image_shape": "rounded 8px"
+    },
+    "interaction_feel": {
+      "feedback_style": "0.2s ease 的颜色/阴影反馈，克制",
+      "hover_behavior": "阴影加深 + 变色，不放大不位移",
+      "transition_personality": "snappy",
+      "loading_style": "图片渐显；无骨架屏",
+      "microinteraction_density": "low-moderate（签名级动效只有首屏打字机一处，命中即记忆点）"
+    },
+    "brand_voice_in_ui": {
+      "tone": "简洁直白，偶有个人化诗意（首屏引用句）",
+      "formality": "casual-neutral，zh-CN",
+      "cta_style": "subtle suggestion",
+      "empty_state_approach": "纯文字（404 页），无插画系统",
+      "error_tone": "plain"
+    }
+  },
+  "visual_effects": {
+    "overview": {
+      "effect_intensity": "moderate（首屏集中，内容区安静）",
+      "performance_tier": "medium（SVG SMIL 循环 + JS 打字机，无 Canvas/WebGL）",
+      "fallback_strategy": "一言 API 超时(4s)→回退本地金句文案；重设计应补 prefers-reduced-motion 时静止插画+直接显示金句",
+      "primary_technology": "SVG SMIL + Vanilla JS"
+    },
+    "background_effects": {
+      "type": "animated flat geometric illustration scene",
+      "description": "100vh cover 首屏背景插画：light = 登山元素（climbed.svg：绿色圆角方块旋转、黄云平移+摇摆、蓝色圆点漂移、珊瑚色三角滚落、浅灰形状漂浮），dark = 夜空元素（put.svg），明暗两套素材随主题切换",
+      "technology": "SVG SMIL（animateTransform / animateMotion，repeatCount=indefinite）",
+      "params": {
+        "color_palette": ["#1a73e8", "#81C995", "#FDD663", "#EE675C", "#F1F3F4"],
+        "speed": "单循环 5–35s，永远 indefinite",
+        "density": "7–8 个几何形",
+        "opacity": 1,
+        "blend_mode": "normal"
+      }
+    },
+    "particle_systems": { "enabled": false, "type": "none", "description": "无粒子系统", "technology": "none", "params": { "count": "0", "shape": "none", "size_range": "none", "movement_pattern": "none", "color_behavior": "none", "interaction": "none", "spawn_area": "none" } },
+    "3d_elements": { "enabled": false, "type": "none", "description": "无 3D 元素", "technology": "none", "params": { "renderer": "none", "lighting": "none", "camera": "none", "materials": "none", "geometry": "none", "post_processing": "none", "interaction_model": "none" } },
+    "shader_effects": { "enabled": false, "type": "none", "description": "无 shader", "technology": "none", "params": { "uniforms": "none", "vertex_manipulation": "none", "fragment_output": "none", "noise_type": "none", "distortion": "none" } },
+    "scroll_effects": {
+      "parallax": { "enabled": false, "layers": "0", "depth_range": "none", "speed_curve": "none" },
+      "scroll_triggered_animations": { "enabled": false, "trigger_points": "none", "animation_type": "none", "scrub_behavior": "none" },
+      "scroll_morphing": { "enabled": false, "description": "无滚动形变；滚动驱动的 UI 状态（header 收缩/毛玻璃、2px 顶部进度条）记入 composite_notes" }
+    },
+    "text_effects": {
+      "type": "typewriter",
+      "description": "首屏金句接力打字机：优先请求一言 API（v1.hitokoto.cn，分类 a/b/d/k），每字符 120ms；800ms 后启动避开主题内置动画；4s 超时回退 _config 静态文案；blink-caret 光标 keyframe；『｜|』token 作为多行接力分隔符",
+      "technology": "Vanilla JS（source/custom/js/relay-typewriter.js）+ CSS blink-caret keyframe",
+      "params": { "split_strategy": "by-char", "animation_per_unit": "逐字插入 + 闪烁竖线光标", "stagger": "120ms/字符；开始前 800ms 等待", "effect_style": "平实打字，无放大变色" }
+    },
+    "cursor_effects": { "enabled": false, "type": "none", "description": "无自定义光标", "params": { "shape": "none", "size": "none", "blend_mode": "none", "trail": "none", "interaction_zone": "none" } },
+    "image_effects": {
+      "type": "reveal-fade",
+      "description": "图片加载时渐显（img-loading-animation keyframe），无 hover 变形",
+      "technology": "CSS keyframe（keep 的 image-mask 组件）",
+      "params": { "filter_pipeline": "none", "hover_transform": "none", "reveal_animation": "opacity fade-in", "distortion_type": "none" }
+    },
+    "glassmorphism_neumorphism": {
+      "enabled": true,
+      "style": "glass（仅 header 一处）",
+      "params": { "blur_radius": "4px", "transparency": "background α 0.28 → 0.4（滚动渐变）", "border_treatment": "none", "shadow_type": "none", "light_source_angle": "n/a" }
+    },
+    "canvas_drawings": { "enabled": false, "type": "none", "description": "无 canvas", "technology": "none", "params": { "draw_method": "none", "animation_loop": "none", "color_scheme": "none", "responsiveness": "none", "interaction": "none" } },
+    "svg_animations": {
+      "enabled": true,
+      "type": "decorative-loop",
+      "description": "首屏插画的无限循环：animateTransform 旋转（方块/三角 30s、35s）+ animateMotion 平移（云 20s、圆点 5–9s）",
+      "params": { "animation_method": "SMIL（begin/dur/keyTimes/values）", "path_morphing": false, "stroke_animation": false, "filter_effects": "none" }
+    },
+    "composite_notes": "整站动效分层：① 首屏层 = SVG SMIL 插画 + JS 打字机 + 透明 header；② 全局滚动层 = 2px 主色进度条 + header 70→50px 收缩 + blur 4px 毛玻璃（JS scroll 监听，非 scroll-timeline）；③ 内容层完全静态仅 0.2s hover。另有未启用的 pjax 彩虹进度条渐变（#f10006→#c303c3 7 色 45deg）。代码高亮 = highlight.js，light 用 Tomorrow、dark 用 GitHub-Dim 感配色，共 140 个 highlight 变量。暗色模式实现为根节点 .dark-mode 类切换（JS 持久化），非 prefers-color-scheme 媒体查询。"
+  }
+}

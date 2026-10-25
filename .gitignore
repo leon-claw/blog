@@ -9,3 +9,7 @@ _multiconfig.yml
 
 # 外部文章仓库（bin/sync-articles.mjs 管理生命周期）
 article-src/
+# Next.js 产物
+.next/
+out/
+next-env.d.ts

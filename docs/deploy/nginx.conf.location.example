@@ -1,0 +1,24 @@
+# nginx location 叠法示例 —— 原静态部署位（listen 127.0.0.1:18100 的 server{} 内）
+# 反向代理到 Next.js 单进程（launchd: org.nohow.blog，PORT 3100）。
+
+# /api/* 请求体上限与全局约束（1MB）对齐
+client_max_body_size 1m;
+
+# _next/static 直接出文件（强缓存，指纹路径），减轻 Node 进程负担。
+# 注意：next build 每次替换 .next/static，Titan 需重载 alias 指向最新构建产物。
+
+location /_next/static {
+    alias /Users/leon.w/workspace/mine/blog/.next/static;
+    expires 365d;
+    add_header Cache-Control "public, immutable";
+    try_files $uri =404;
+}
+
+location / {
+    proxy_pass http://127.0.0.1:3100;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_read_timeout 30s;   # 大于 /api/delay 上限 10s 即可
+}

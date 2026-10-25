@@ -1,0 +1,21 @@
+# Leon's Blog MCP Server（远程部署镜像）
+# 只打包 MCP 服务与文章数据，不装 Hexo 全家桶
+#
+#   docker build -t leon-blog-mcp .
+#   docker run -d --name leon-blog-mcp -p 8787:8787 leon-blog-mcp \
+#     mcp/server.mjs --http --host 0.0.0.0 --refresh 600 --token <YOUR_TOKEN>
+#
+#   （--refresh 括号内可选；不带 --token 则端点无鉴权）
+FROM node:22-alpine
+WORKDIR /app
+
+COPY package.json ./
+COPY mcp ./mcp
+COPY source/_posts ./source/_posts
+
+# 只要官方 MCP SDK，其余 hexo 依赖无需安装
+RUN npm install --silent --no-audit --no-fund @modelcontextprotocol/sdk@^1.32.1
+
+EXPOSE 8787
+ENTRYPOINT ["node"]
+CMD ["mcp/server.mjs", "--http", "--host", "0.0.0.0", "--refresh", "600"]

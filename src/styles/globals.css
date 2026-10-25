@@ -1,0 +1,127 @@
+@import 'tailwindcss';
+
+/* class 策略暗色：html.dark-mode（DNA 语义；替代 keep 主题同名机制） */
+@custom-variant dark (&:where(.dark-mode, .dark-mode *));
+
+/* 语义色（light 值来自 design-dna.json 编译产物） */
+:root {
+  --bg: #ffffff;
+  --bg-elevated: #f7f7f7;
+  --bg-sunken: #f0f0f0;
+  --text-strong: #484853;
+  --text-base: #50505c;
+  --text-dim: #808091;
+  --text-faint: #b7b7c0;
+  --border-soft: rgba(80, 80, 92, 0.15);
+  --border-strong: #b3b3b3;
+  --primary: #0066cc;
+  --primary-hover: #0075eb;
+  --selection: #0075eb;
+  --shadow-1: 0 0 8px rgba(0, 0, 0, 0.16);
+  --shadow-hover: 0 0 12px rgba(0, 0, 0, 0.22);
+}
+
+.dark-mode {
+  --bg: #22272e;
+  --bg-elevated: #292f38;
+  --bg-sunken: #313842;
+  --text-strong: #b7c2cc;
+  --text-base: #adbac5;
+  --text-dim: #6c8397;
+  --text-faint: #4d5e6c;
+  --border-soft: rgba(173, 186, 197, 0.15);
+  --border-strong: #596678;
+  --primary: #06c;
+  --primary-hover: #268bef;
+  --selection: #005ebc;
+  --shadow-1: 0 0 8px rgba(120, 120, 120, 0.18);
+  --shadow-hover: 0 0 12px rgba(120, 120, 120, 0.24);
+}
+
+/* token → Tailwind 工具类（inline 引用运行时变量，主题切换即时生效） */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-sunken: var(--bg-sunken);
+  --color-text-strong: var(--text-strong);
+  --color-text-base: var(--text-base);
+  --color-text-dim: var(--text-dim);
+  --color-text-faint: var(--text-faint);
+  --color-border-soft: var(--border-soft);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+
+  --font-sans: Optima-Regular, Optima, PingFang SC, Microsoft YaHei, sans-serif;
+  --font-mono: 'Source Code Pro', consolas, Menlo, monospace;
+
+  --radius-box: 8px;
+
+  --text-blog: 15.2px;
+  --text-blog--line-height: 1.45;
+
+  --ease-standard: ease;
+  --duration-standard: 0.2s;
+
+  --header-height: 70px;
+  --content-max: 960px;
+}
+
+::selection {
+  background: var(--selection);
+}
+
+/* ===== 文章排版（.prose，DNA 演化：结构由 markdown 管线产出） ===== */
+.prose {
+  color: var(--text-base);
+  line-height: 1.45;
+  overflow-wrap: break-word;
+}
+.prose > * + * { margin-top: 1rem; }
+.prose h1, .prose h2, .prose h3, .prose h4 { color: var(--text-strong); font-weight: 600; margin-top: 1.6em; scroll-margin-top: 80px; }
+.prose h1 { font-size: 1.68rem; }
+.prose h2 { font-size: 1.5rem; }
+.prose h3 { font-size: 1.37rem; }
+.prose h4 { font-size: 1.4rem; font-weight: 550; }
+.prose p, .prose li { font-size: 15.2px; }
+.prose a { color: var(--primary); }
+.prose a:hover { text-decoration: underline; }
+.prose ul, .prose ol { padding-left: 1.5em; }
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+.prose li + li { margin-top: 0.35em; }
+.prose img { max-width: 100%; border-radius: var(--radius-box); box-shadow: var(--shadow-1); }
+.prose blockquote { border-left: 3px solid var(--border-strong); padding-left: 1em; color: var(--text-dim); font-style: italic; }
+.prose hr { border: 0; border-top: 1px solid var(--border-soft); }
+.prose table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.prose th, .prose td { border: 1px solid var(--border-soft); padding: 6px 10px; text-align: left; }
+.prose th { background: var(--bg-sunken); color: var(--text-strong); }
+.prose :not(pre) > code { background: var(--bg-sunken); border-radius: 6px; padding: 2px 6px; font-size: 0.88em; font-family: var(--font-mono); color: var(--text-strong); }
+.prose pre:not(.shiki) { background: var(--bg-sunken); border-radius: var(--radius-box); padding: 14px 16px; overflow-x: auto; }
+
+/* ===== shiki 双主题（构建期生成 --shiki-light/--shiki-dark 变量对，明暗切换零重绘内容） ===== */
+.shiki { border-radius: var(--radius-box); padding: 14px 16px; overflow-x: auto; background-color: var(--shiki-light-bg, var(--bg-sunken)) !important; }
+.shiki code { font-family: var(--font-mono); font-size: 13.2px; display: block; }
+.shiki span { color: var(--shiki-light); }
+.dark-mode .shiki { background-color: var(--shiki-dark-bg, var(--bg-elevated)) !important; }
+.dark-mode .shiki span { color: var(--shiki-dark); }
+.shiki .line { display: inline-block; min-height: 1em; width: 100%; }
+
+/* ===== Header 收缩（DNA：70→50px + 4px 毛玻璃；状态类由 ScrollChrome 驱动） ===== */
+#site-header { height: var(--header-height); }
+#site-header.is-scrolled { height: 50px; backdrop-filter: blur(4px); }
+
+/* ===== 首屏（Liquid cover：SMIL 动画 SVG，亮/暗双版） ===== */
+.first-screen {
+  min-height: 100vh;
+  background: url('/images/bg/light.svg') center / cover no-repeat var(--bg);
+}
+.dark-mode .first-screen {
+  background-image: url('/images/bg/dark.svg');
+}
+.typewriter {
+  min-height: 1.5em;
+  color: var(--text-base);
+  font-size: 1rem;
+  white-space: pre-wrap;
+}
