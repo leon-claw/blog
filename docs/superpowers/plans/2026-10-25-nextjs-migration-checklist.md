@@ -6,6 +6,8 @@
 > 缘由：Next 15.5.28 对非 ASCII 动态段的 prerender 键匹配有缺陷——`dynamicParams = false` 下中文 slug（请求为 percent-encoded 形态）一律落入 `NoFallbackError` → 404（ASCII slug 正常）。现为：SSG 预渲染 66 页照常；中文 slug 首发服务器渲染，随后进增量缓存（`x-nextjs-cache: HIT`），在单进程部署形态下语义等同 ISR。
 > 键采用 encoded 形态可让「请求 URL ↔ 预渲染缓存键」同形态；页内 `decodeURIComponent` 还原后查询数据（`post-page.ts` / `[slug]/page.tsx` 已配套）。
 > 升级 Next 后应复核此缺陷是否修复（修复后可改回 `false` 并还原 raw 键）。
+>
+> **后续裁决（同日，用户指令）：文章源头收编本项目**——外部仓库 `Leonw26/article` 与 `bin/sync-articles.mjs` 退役（设计文档 §10 的同步架构自此作废）。文章唯一数据源 = `content/posts/`（仓库直管）；私密草稿迁至 `drafts/private/`（.gitignore 排除，天然不进构建/MCP/发布）；Obsidian wiki 图片语法转换移入渲染层（`src/lib/markdown.ts` `normalizeObsidianImages`）；`public/images/articles|bg` 随 .gitignore 移除 `public/` 规则后入库。66 篇公开文章 + 13 张图片无遗漏（两侧集合 diff 为空）。
 
 ```bash
 # 1. 测试与类型门禁

@@ -22,8 +22,7 @@
  *   blog://site            站点概览
  *   blog://posts/{slug}    文章 Markdown
  *
- * 数据源为 source/_posts/*.md（bin/sync-articles.mjs 同步，
- * article-src/private 私密草稿天然被排除）。
+ * 数据源为 content/posts/*.md（本仓库直接管理；私密草稿 drafts/ 天然被排除）。
  */
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'

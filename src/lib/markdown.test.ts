@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
-import { readingMetrics, renderMarkdown } from './markdown'
+import { normalizeObsidianImages, readingMetrics, renderMarkdown } from './markdown'
 
 const fx = (name: string) => fs.readFileSync(path.resolve(__dirname, `../../tests/fixtures/markdown/${name}`), 'utf8')
 
@@ -37,5 +37,39 @@ describe('readingMetrics（spec：去代码块与图片；400 字/分钟下限 1
   it('图片语法不计入', () => {
     const m = readingMetrics('![[./images/a.png]] 好')
     expect(m.chars).toBe('好'.length)
+  })
+})
+
+describe('normalizeObsidianImages（文章源直读后，wiki 图片语法在渲染层转换）', () => {
+  it('带 images/ 前缀与 ./ 相对路径都归一到 /images/articles/', () => {
+    expect(normalizeObsidianImages('![[./images/xx.png]]')).toBe(
+      '<img src="/images/articles/xx.png" alt="xx.png">',
+    )
+    expect(normalizeObsidianImages('![[Pasted image 2021.png]]')).toBe(
+      '<img src="/images/articles/Pasted%20image%202021.png" alt="Pasted image 2021.png">',
+    )
+  })
+
+  it('宽度后缀并入 width 属性；非数字后缀不吞掉内容', () => {
+    expect(normalizeObsidianImages('![[a.png|500]]')).toBe(
+      '<img src="/images/articles/a.png" alt="a.png" width="500">',
+    )
+    expect(normalizeObsidianImages('正文 ![[a.png|bar]] 仍转')).toBe(
+      '正文 <img src="/images/articles/a.png" alt="a.png"> 仍转',
+    )
+  })
+
+  it('中文文件名 encodeURI 保留可读性；属性转义引号', () => {
+    expect(normalizeObsidianImages('![[測試.png]]')).toBe(
+      '<img src="/images/articles/%E6%B8%AC%E8%A9%A6.png" alt="測試.png">',
+    )
+    expect(normalizeObsidianImages('![[a"b.png]]')).toBe(
+      '<img src="/images/articles/a%22b.png" alt="a&quot;b.png">',
+    )
+  })
+
+  it('renderMarkdown 全链路：wiki 图渲染进 html', async () => {
+    const { html } = await renderMarkdown('段落 ![[./images/全链路.png]]')
+    expect(html).toContain('src="/images/articles/%E5%85%A8%E9%93%BE%E8%B7%AF.png"')
   })
 })

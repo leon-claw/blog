@@ -3,12 +3,11 @@ Thumbs.db
 .db.json
 *.log
 node_modules/
-public/
 .deploy*/
 _multiconfig.yml
 
-# 外部文章仓库（bin/sync-articles.mjs 管理生命周期）
-article-src/
+# 私密写作草稿（不参与构建与发布，绝不入库）
+drafts/
 # Next.js 产物
 .next/
 out/

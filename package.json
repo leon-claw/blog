@@ -9,8 +9,7 @@
     "test": "vitest run",
     "mcp": "node mcp/server.mjs",
     "mcp:http": "node mcp/server.mjs --http",
-    "mcp:install": "node bin/mcp-install.mjs",
-    "sync-articles": "node bin/sync-articles.mjs"
+    "mcp:install": "node bin/mcp-install.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",

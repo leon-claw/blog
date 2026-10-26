@@ -1,8 +1,8 @@
 /**
  * Leon's Blog MCP 数据层
  *
- * 从 content/posts/*.md（npm run sync-articles 自 Leonw26/article 同步，
- * article-src/private 私密目录天然被排除）读取文章，提供：
+ * 从 content/posts/*.md（文章唯一数据源，本仓库直接管理；私密草稿 drafts/ 不在该目录（被 .gitignore 排除）
+ * 且天然不进 MCP 索引）读取文章，提供：
  *   - front matter 解析（title/date/tags/...）
  *   - 站点 URL 规则的生成（唯一形态 /posts/:slug，根 URL 常量 DEFAULT_SITE_URL）
  *   - 中文友好的全文检索（子串匹配 + 评分）
@@ -164,7 +164,7 @@ function countWords(body) {
 
 function loadPosts(site) {
   if (!existsSync(POSTS_DIR)) {
-    throw new Error(`posts 目录不存在: ${POSTS_DIR}（先跑 node bin/sync-articles.mjs）`)
+    throw new Error(`posts 目录不存在: ${POSTS_DIR}`)
   }
   const posts = []
   for (const file of readdirSync(POSTS_DIR)) {

@@ -3,12 +3,12 @@
 把博客本身变成一个 **MCP（Model Context Protocol）服务**，任何支持 MCP 的 AI Agent（Claude Desktop、Cursor、VS Code Copilot、Claude Code 等）都能一键接入后检索、阅读你的博客全文。
 
 ```
-article-src(私有文章仓库)          MCP 客户端
-   │  bin/sync-articles.mjs        ├─ claude-desktop ─┐
-   ▼                               ├─ cursor ─────────┤ stdio
-source/_posts/*.md ──► mcp/server.mjs ──► ├─ vscode ─────────┘
-(私密 private/ 已排除)       │            └─ claude-code
-                            └─ --http ► http://host:8787/mcp（远程 Agent）
+content/posts/*.md ──► mcp/server.mjs ──► MCP 客户端
+(直接管理提交；drafts/ 私密草稿天然排除)  ├─ claude-desktop ─┐
+                                        ├─ cursor ─────────┤ stdio
+                                        ├─ vscode ─────────┘
+                                        └─ claude-code
+                                        └─ --http ► http://host:8787/mcp（远程 Agent）
 ```
 
 ## 提供的能力
@@ -23,7 +23,7 @@ source/_posts/*.md ──► mcp/server.mjs ──► ├─ vscode ────
 | `blog://posts/{slug}` | Resource | 文章 Markdown 原文 |
 | `blog://site` | Resource | 站点概览 JSON |
 
-数据源是 `source/_posts/*.md`（由 `bin/sync-articles.mjs` 从文章仓库同步生成），**`article-src/private/` 私密草稿在同步阶段就被排除，不会出现在 MCP 里**。
+数据源是 `content/posts/*.md`（本仓库直接管理），**私密草稿放 `drafts/private/`（被 .gitignore 排除，不在 `content/posts` 目录下，天然不出现在 MCP/构建/发布里）**。草稿转公开时手动移入 `content/posts/`。
 
 ## 一键接入
 
