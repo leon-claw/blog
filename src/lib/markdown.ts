@@ -34,11 +34,12 @@ export function normalizeObsidianImages(md: string): string {
     /!\[\[\s*(?:\.?\/)?(?:images\/)?([^\]|]+?)\s*(?:\|([^\]]*))?\]\]/g,
     (_, name: string, suffix?: string) => {
       const trimmed = name.trim()
-      const file = encodeURI(trimmed)
+      const base = trimmed.includes('/') ? (trimmed.split('/').pop() ?? trimmed) : trimmed
+      const file = encodeURI(base)
       // Obsidian 宽度后缀：纯数字才并成 width 属性；其余后缀丢弃（与原 sync 行为一致）
       const width = suffix?.trim()
       const w = width && /^\d+$/.test(width) ? ` width="${width}"` : ''
-      const alt = trimmed.replace(/&/g, '&amp;').replace(/"/g, '&quot;')
+      const alt = base.replace(/&/g, '&amp;').replace(/"/g, '&quot;')
       return `<img src="/images/articles/${file}" alt="${alt}"${w}>`
     },
   )

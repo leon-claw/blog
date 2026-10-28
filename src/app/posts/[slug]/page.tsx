@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { excerpt, postStaticParams } from '@/lib/post-page'
+import { decodeParamSlug, excerpt, postStaticParams } from '@/lib/post-page'
 import { getAdjacentPosts, getPostBySlug } from '@/lib/posts'
 import { readingMetrics, renderMarkdown } from '@/lib/markdown'
 import { Prose } from '@/components/Prose'
@@ -16,13 +16,13 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const post = getPostBySlug(decodeURIComponent((await params).slug))
+  const post = getPostBySlug(decodeParamSlug((await params).slug))
   if (!post) return {}
   return { title: post.title, description: excerpt(post.content) }
 }
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
-  const slug = decodeURIComponent((await params).slug)
+  const slug = decodeParamSlug((await params).slug)
   const post = getPostBySlug(slug)
   if (!post) notFound()
 

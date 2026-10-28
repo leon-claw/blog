@@ -59,6 +59,12 @@ describe('normalizeObsidianImages（文章源直读后，wiki 图片语法在渲
     )
   })
 
+  it('Obsidian 相对/带路径链接（非最短路径设置）也拉回 basename', () => {
+    expect(normalizeObsidianImages('![[../public/images/articles/img/a.png]]')).toBe(
+      '<img src="/images/articles/a.png" alt="a.png">',
+    )
+  })
+
   it('中文文件名 encodeURI 保留可读性；属性转义引号', () => {
     expect(normalizeObsidianImages('![[測試.png]]')).toBe(
       '<img src="/images/articles/%E6%B8%AC%E8%A9%A6.png" alt="測試.png">',
