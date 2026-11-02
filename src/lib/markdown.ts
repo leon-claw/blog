@@ -53,6 +53,16 @@ const langAttributeTransformer: ShikiTransformer = {
   },
 }
 
+/**
+ * shiki 高亮配置（spec §7）：
+ * - langs 显式白名单：插件默认加载全部 bundled languages（~200 个 grammar），
+ *   拖慢 SSG 每个 worker 的冷启动（单页超 60s 的根因）；这里只装博客实际用到的语言。
+ *   text/txt/plain 属内建特殊语言无需加载；语言名大小写不敏感，大写 `JSON` 命中 json。
+ * - langAlias 兼容文章历史写法/笔误（react → jsx、javascirpt → javascript）。
+ * 未命中的语言走 fallbackLanguage: 'plaintext'，与原行为一致。
+ */
+const SHIKI_LANGS = ['css', 'html', 'javascript', 'jsx', 'json', 'rust', 'shell', 'tsx', 'typescript', 'yaml'] as const
+
 const processor = unified()
   .use(remarkParse)
   .use(remarkGfm)
@@ -62,6 +72,11 @@ const processor = unified()
     themes: { light: 'github-light', dark: 'github-dark-dimmed' },
     defaultColor: false,
     fallbackLanguage: 'plaintext',
+    langs: [...SHIKI_LANGS],
+    langAlias: {
+      react: 'jsx',
+      javascirpt: 'javascript',
+    },
     transformers: [langAttributeTransformer],
   })
   .use(rehypeStringify, { allowDangerousHtml: true })

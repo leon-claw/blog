@@ -12,8 +12,24 @@ import { readdirSync, readFileSync, existsSync } from 'node:fs'
 import { join, resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-/** 博客仓库根目录（mcp/lib -> mcp -> 根） */
-export const BLOG_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..')
+/**
+ * 博客仓库根目录：mcp/lib -> mcp -> 根。
+ * 兜底：next build standalone 等场景 cwd 在 .next/standalone，
+ * 此时回退到项目根（cwd 的上一级）。
+ */
+function resolveBlogRoot() {
+  const derived = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..')
+  if (existsSync(join(derived, 'content', 'posts'))) return derived
+  for (const cand of [process.cwd(), resolve(process.cwd(), '..')]) {
+    if (existsSync(join(cand, 'content', 'posts'))) {
+      console.warn(`[leon-blog-mcp] 数据目录不在模块推导路径，回退 cwd 兜底: ${cand}`)
+      return cand
+    }
+  }
+  return derived
+}
+
+export const BLOG_ROOT = resolveBlogRoot()
 
 const POSTS_DIR = join(BLOG_ROOT, 'content', 'posts')
 /** 站点对外根 URL（_config.yml 停用后 Next 常量唯一来源）；占位/未设一律回退默认 */

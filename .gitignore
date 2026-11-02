@@ -13,3 +13,4 @@ drafts/
 .next/
 out/
 next-env.d.ts
+*.tsbuildinfo

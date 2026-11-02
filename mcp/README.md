@@ -3,12 +3,16 @@
 把博客本身变成一个 **MCP（Model Context Protocol）服务**，任何支持 MCP 的 AI Agent（Claude Desktop、Cursor、VS Code Copilot、Claude Code 等）都能一键接入后检索、阅读你的博客全文。
 
 ```
-content/posts/*.md ──► mcp/server.mjs ──► MCP 客户端
-(直接管理提交；drafts/ 私密草稿天然排除)  ├─ claude-desktop ─┐
-                                        ├─ cursor ─────────┤ stdio
-                                        ├─ vscode ─────────┘
-                                        └─ claude-code
-                                        └─ --http ► http://host:8787/mcp（远程 Agent）
+content/posts/*.md ──┬─► mcp/lib/app.mjs（共享装配：工具 schema + handlers + 索引）
+(直接管理提交；drafts/ 私密草稿天然排除)  │
+                     ├─► mcp/server.mjs（stdio / --http 独立进程）
+                     │       ├─ claude-desktop ─┐
+                     │       ├─ cursor ─────────┤ stdio
+                     │       ├─ vscode ─────────┘
+                     │       └─ claude-code
+                     │       └─ --http ► http://host:8787/mcp（远程 Agent）
+                     └─► src/app/mcp/route.ts（Next Route Handler，随主站进程常驻）
+                             └─ https://jianghong.site/mcp（生产端点，nginx 无需单独路由）
 ```
 
 ## 提供的能力
@@ -93,6 +97,124 @@ node bin/mcp-install.mjs --remove --yes
 claude mcp add leon-blog -s user -- node /absolute/path/to/blog/mcp/server.mjs
 ```
 
+## Agent 远程接入（生产端点）
+
+> **给 AI Agent 使用者**：下面是一份自包含的接入说明，无需阅读本文件其他章节。把这段告诉你的 Agent，或直接复制配置即可。
+
+### 端点
+
+```text
+https://jianghong.site/mcp
+```
+
+- 协议：MCP **Streamable HTTP**（无状态，JSON 响应），基于官方 `@modelcontextprotocol/sdk`
+- 鉴权：当前未启用验证；接口只读
+- 内容：`jianghong.site` 全部公开文章（中文技术博客，66 篇+），私密草稿不在数据集内
+
+### 配置
+
+将服务器 `leon-blog` 以 **HTTP 远程 MCP** 形态加入你的 MCP 客户端：
+
+**Cursor（`~/.cursor/mcp.json`）**
+
+```json
+{
+  "mcpServers": {
+    "leon-blog": {
+      "url": "https://jianghong.site/mcp"
+    }
+  }
+}
+```
+
+**Claude Code**
+
+```bash
+claude mcp add --transport http leon-blog https://jianghong.site/mcp
+```
+
+**VS Code / 其他兼容客户端（`mcp.json`）**
+
+```json
+{
+  "servers": {
+    "leon-blog": {
+      "type": "http",
+      "url": "https://jianghong.site/mcp"
+    }
+  }
+}
+```
+
+**Claude Desktop**：设置 → Connectors → 添加自定义连接器，URL 填 `https://jianghong.site/mcp`。
+
+### 可用工具
+
+调用上述配置重启后，Agent 可以使用以下 5 个工具：
+
+| 工具 | 说明 |
+| --- | --- |
+| `search_posts` | 全文检索，参数 `query`（支持多关键词 AND、中文子串），可选 `limit` |
+| `list_posts` | 列出文章元信息（标题/日期/标签/URL），可选 `tag` / `category` / `limit` / `offset` 分页 |
+| `get_post` | 读取一篇完整 Markdown，参数 `slug`（也兼容中文标题） |
+| `list_tags` | 所有标签与文章计数 |
+| `get_site_info` | 站点名称/作者/URL/文章总数/时间跨度 |
+
+另有 MCP 资源：`blog://posts/{slug}`（文章原文）与 `blog://site`（站点 JSON）。
+
+### HTTP 裸调（Agent 自检用）
+
+Agent 无需 MCP 客户端，直接发 HTTP 请求也可以。请求格式为 JSON-RPC 2.0，全部请求 `POST https://jianghong.site/mcp`，带 `Content-Type: application/json` 和 `Accept: application/json, text/event-stream` 两个 header。
+
+**验证连通（`tools/list`）**：
+
+```bash
+curl -s https://jianghong.site/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+返回 5 个工具的 JSON 列表即成功。
+
+**调用一次工具（示例 `get_site_info`）**：
+
+```bash
+curl -s https://jianghong.site/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_site_info","arguments":{}}}'
+```
+
+其余工具同理：把 `params.name` 换成 `search_posts` / `list_posts` / `get_post` / `list_tags`，`params.arguments` 填对应 schema（见上表）。例如搜索：
+
+```bash
+curl -s https://jianghong.site/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"search_posts","arguments":{"query":"rust","limit":5}}}'
+```
+
+**读取资源**：`POST` 同一端点，`method` 用 `resources/read`，`params.uri` 填文章或站点 URI（如 `blog://posts/git`、`blog://site`）。响应里每条 result 的 `content[].text` 就是工具/资源的产物文本；工具返回的 JSON 串可以直接 `JSON.parse` 后取用。
+
+**改用本地 stdio**：不想走网络时，Agent（Claude Code / Cursor / VS Code 等）也可以直接 spawn `node /path/to/blog/mcp/server.mjs`（任何 git clone 本仓库的机器均可，需 `npm i @modelcontextprotocol/sdk`）。详见下文[手动接入](#手动接入拷贝即用)。
+
+### 注意事项
+
+- 本服务**只读**，不会对博客/站点造成写入；可放心让 Agent 自由检索
+- 如果需要自定义 header（当前未启用鉴权，但服务端后续可能加 Bearer），Cursor/VS Code/Claude Code 都支持在 MCP HTTP 配置里写 `headers` 字段
+- 部署了什么变更、文章何时更新，见本 README 后文 [远程部署](#远程部署让别处的-Agent-接入) 章节
+
+### 生产端点实现：Next 进程内嵌（无需单独的 MCP 服务）
+
+`https://jianghong.site/mcp` 由博客主站进程（Next.js）本身提供——[src/app/mcp/route.ts](../src/app/mcp/route.ts) 是一个 Route Handler，内部复用 `mcp/lib/app.mjs` 的共享装配 + 官方 SDK 的 `WebStandardStreamableHTTPServerTransport`（无状态、JSON 响应，与 `--http` 模式行为一致）。因此：
+
+- **nginx 不需要为 `/mcp` 单独配置路由**，走现有 `location /` 反代即可
+- 部署主站（`next build` → `node .next/standalone/server.js`）就自动带上 MCP 端点，无需再起一个 `mcp/server.mjs --http` 进程、也不占额外端口
+- 每个请求独立建 transport + server（无状态模式不复用实例），工具数据与主站同源、部署即同步
+
+`mcp/server.mjs`（stdio / `--http`）依然保留，用于本地调试、一键接入客户端与独立远程部署（见下文）。两种形态共享同一份索引与工具实现，行为一致。
+
 ## HTTP 模式（远程 Agent / Web 服务接入）
 
 `node mcp/server.mjs --http` 后暴露标准 **Streamable HTTP** 端点（无状态，`enableJsonResponse`）：
@@ -114,7 +236,7 @@ curl -s http://127.0.0.1:8787/mcp \
 
 ## 远程部署：让别处的 Agent 接入
 
-想把端点公开给远程 Agent（别人设备上的 Cursor / Claude Desktop / Claude Code 等），需要一台能常驻跑 Node 的机器。文章数据（`source/_posts/`）已提交进 Git，**部署只是 clone + 安装 SDK + 起进程**，不需要 Hexo：
+想把端点公开给远程 Agent（别人设备上的 Cursor / Claude Desktop / Claude Code 等），需要一台能常驻跑 Node 的机器。文章数据（`content/posts/`）已提交进 Git，**部署只是 clone + 安装 SDK + 起进程**，不需要 Hexo：
 
 ### 方案 A：VPS + systemd（推荐，最简）
 
@@ -164,7 +286,7 @@ docker run -d --name leon-blog-mcp -p 8787:8787 leon-blog-mcp \
   mcp/server.mjs --http --host 0.0.0.0 --token <YOUR_TOKEN>
 ```
 
-镜像只含 `mcp/` + `source/_posts/` + MCP SDK，几十 MB。文章更新需重建镜像或 `-v` 挂载 `source/_posts`。
+镜像只含 `mcp/` + `content/posts/` + MCP SDK，几十 MB。文章更新需重建镜像或 `-v` 挂载 `content/posts`。
 
 ### 远程客户端配置
 
@@ -228,6 +350,6 @@ node mcp/test-smoke.mjs     # stdio 全链路 11 项断言
 
 ## 已知说明
 
-- 文章 URL 由 `_config.yml` 的 `permalink`（`:year/:month/:day/:title/`）生成；**如果 `url` 还是 hexo 占位符 `example.com`，会自动降级为站内相对路径**（如 `/2023/05/14/xxx/`），配置真实域名后自动变成完整外链。
-- 66 篇文章全量索引纯本地读取，启动无网络依赖。
-- 新文章更新后无需重启：MCP 服务每次启动时重新扫描；长驻的 HTTP 模式重启进程即可（或交给 systemd/pm2 托管）。
+- 文章 URL 固定为 `/posts/:slug`（常量在 `mcp/lib/store.mjs`），文章数据源与站点 url 常量也维护在该文件；工具返回的 `url` 字段即线上完整外链。
+- 文章全量索引纯本地读取，启动无网络依赖；全量索引随每次启动/刷新重建。
+- 新文章更新后无需重启：MCP 服务每次启动时重新扫描；长驻的 HTTP 模式可用 `--refresh <秒>` 定时重建索引（或重启进程）。
