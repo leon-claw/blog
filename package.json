@@ -12,7 +12,7 @@
     "mcp:install": "node bin/mcp-install.mjs"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.32.1",
+    "@modelcontextprotocol/sdk": "^1.32.2",
     "@shikijs/rehype": "^4.5.0",
     "gray-matter": "^4.0.3",
     "next": "^15.5.6",
