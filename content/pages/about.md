@@ -3,23 +3,48 @@ title: 关于我
 date: 2026-10-18 10:00:00
 ---
 
-你好，我是 **Leon** 👋
+## 个人简介
 
-一名前端工程师，平时主要写代码、踩坑和记笔记。这个博客就是我踩坑笔记的家——写的都是工作中真实遇到的问题和读书学习的沉淀，尽量把「为什么」讲清楚，而不只是「怎么办」。
+😎 我是 Leon，一名前端工程师，也是全栈工程师，重度 AI 使用者，目前在香港城市大学数据科学专业攻读硕士。
 
-## 我在写什么
+⏳ 十年前端开发经验——从大三开始接触前端，至今一直以前端为主，顺带攒下了不少全栈的活儿。
 
-- **前端**：React、Vue、CSS 的各种细节（换行、定位、性能优化……）
-- **Node.js / 服务端**：文件上传、编码处理、Serverless 实践
-- **工程化**：架构重构调研、微前端、升级迁移记录
-- **读书笔记**：《Rust 程序设计语言》《HTTP 权威指南》《Node.js 深入浅出》……
+🏢 待过的行业：脑机接口、互联网营销、金融。
 
-## 关于这个博客
+🚀 在 AI 时代决定重回校园转型，积极转向 AI 方向，现在深耕 Agent 开发、AI+开发。
 
-- 基于 Hexo 搭建，文章源码单独放在独立仓库管理，部署走静态托管
-- 所有文章都可以通过本站的 MCP 接口被 AI Agent 检索和阅读全文
+🧰 技术栈：TypeScript、CSS、React、Vue、Node.js、Next.js、Webpack、微信小程序、Redis、MongoDB、Monorepo、Rust.
 
-## 联系我
+🤖 Agent 技术栈：Python、PyTorch、sklearn、Pi-Agent、LangGraph.
 
-- GitHub：[yourname](https://github.com/yourname)
-- 邮箱：[you@example.com](mailto:you@example.com)
+📖 最初写博客，是想把踩过的坑、重点难点，还有沉下心来学过的东西沉淀下来。
+
+💤 中间停更了很长时间——AI 就像一个万能的博客，一度想就此弃更。
+
+🔄 最近 Agent 的发展让我意识到：在线博客也可以是知识库，所以重拾博客。
+
+## 如何让你的 Agent 了解我
+
+🛰 本站对外提供 MCP 服务：`https://jianghong.site/mcp`（Streamable HTTP），主流 Agent 客户端均可直接添加。
+
+🧰 接入后能做的事：全文检索（`search_posts`）、按时间列文章（`list_posts`）、读单篇全文或摘要（`get_post`）、查全部标签（`list_tags`）、取站点概览（`get_site_info`）。
+
+📋 把下面这段 Prompt 复制给你的 Agent，它就会自己接入并了解我：
+
+```text
+请帮我新增连接一个 MCP 服务（Streamable HTTP）：
+
+- 名称：leon-blog
+- 端点：https://jianghong.site/mcp
+
+接入成功后，请依次执行：
+1. 调用 get_site_info，了解站点基本情况；
+2. 用 search_posts 检索「Agent」「Rust」「Next.js」等我关注的方向，
+   挑 2~3 篇近期文章，用 get_post 读取全文；
+3. 结合读到的内容，总结我是谁、技术背景和当前方向，
+   作为你以后对话中关于我的背景知识。
+
+如果你的环境不支持动态添加 MCP 连接，请直接告诉我添加它的具体步骤。
+```
+
+🎉 欢迎各位朋友们，干杯。
