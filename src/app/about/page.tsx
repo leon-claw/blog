@@ -3,10 +3,14 @@ import path from 'node:path'
 import matter from 'gray-matter'
 import { renderMarkdown } from '@/lib/markdown'
 import { Prose } from '@/components/Prose'
+import { PromptCopyEnhancer } from '@/components/PromptCopyEnhancer'
 
 export const metadata = { title: '关于' }
 
 const ABOUT_FILE = () => process.env.ABOUT_SRC ?? path.resolve(process.cwd(), 'content/pages/about.md')
+
+/** ```text 围栏 → Prompt 演示块（data-prompt）：常暗终端观感 + PROMPT 标签 + 复制按钮（按钮由 PromptCopyEnhancer 水合后挂载） */
+const markPromptBlocks = (html: string) => html.replace(/<pre(?=[^>]*data-language="text")/g, '<pre data-prompt')
 
 /**
  * about 为站点级单页，与其他页一致走构建期渲染。
@@ -22,7 +26,8 @@ export default async function AboutPage() {
   return (
     <div className="mx-auto w-full max-w-[var(--content-max)] px-4">
       <h1 className="text-3xl font-semibold text-text-strong">{title}</h1>
-      <Prose html={html} />
+      <Prose html={markPromptBlocks(html)} />
+      <PromptCopyEnhancer />
     </div>
   )
 }

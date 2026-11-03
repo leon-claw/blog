@@ -107,6 +107,27 @@
 .dark-mode .shiki span { color: var(--shiki-dark); }
 .shiki .line { display: inline-block; min-height: 1em; width: 100%; }
 
+/* ===== Prompt 演示块（about 定制）：text 语言无语法配色，浅色下白底黑字像纯文本；这里常暗终端观感 + PROMPT 标签 + 复制按钮 ===== */
+pre.shiki[data-prompt] { background-color: var(--shiki-dark-bg, #22272e) !important; padding-top: 32px; }
+pre.shiki[data-prompt] span { color: var(--shiki-dark, #adbac7) !important; }
+div[data-prompt-wrap]::before {
+  content: 'PROMPT';
+  position: absolute; top: 12px; left: 14px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em;
+  color: rgba(173, 186, 197, .85);
+}
+.prompt-copy-btn {
+  position: absolute; top: 10px; right: 10px;
+  border-radius: var(--radius-box);
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .08);
+  color: #adbac7;
+  font-size: 12px; line-height: 1; padding: 5px 10px;
+  cursor: pointer; transition: background-color .2s ease;
+}
+.prompt-copy-btn:hover { background: rgba(255, 255, 255, .16); }
+.prompt-copy-btn:active { background: rgba(255, 255, 255, .24); }
+
 /* ===== Header 收缩（DNA：70→50px + 4px 毛玻璃；状态类由 ScrollChrome 驱动） ===== */
 #site-header { height: var(--header-height); }
 #site-header.is-scrolled { height: 50px; backdrop-filter: blur(4px); }
